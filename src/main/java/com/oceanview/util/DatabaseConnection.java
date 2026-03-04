@@ -18,7 +18,7 @@ public class DatabaseConnection {
     // ─── DATABASE CONFIG ───
     private static final String DB_URL      = "jdbc:mysql://localhost:3306/oceanview_resort";
     private static final String DB_USER     = "root";
-    private static final String DB_PASSWORD = "your_password_here";
+    private static final String DB_PASSWORD = "1234";
     private static final String DB_DRIVER   = "com.mysql.cj.jdbc.Driver";
 
     // ─── PRIVATE CONSTRUCTOR ───
