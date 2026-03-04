@@ -64,6 +64,27 @@ public class RoomDAO {
         return rooms;
     }
 
+    // ─── GET ROOM BY ID ───
+    public Room getRoomById(int roomId) {
+        String sql = "SELECT r.*, rt.type_name, rt.base_price, " +
+                "rt.amenities, rt.room_type_id " +
+                "FROM rooms r " +
+                "JOIN room_types rt " +
+                "ON r.room_type_id = rt.room_type_id " +
+                "WHERE r.room_id = ?";
+        try {
+            PreparedStatement ps = connection.prepareStatement(sql);
+            ps.setInt(1, roomId);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return mapResultSetToRoom(rs);
+            }
+        } catch (SQLException e) {
+            System.err.println("Get room by ID error: " + e.getMessage());
+        }
+        return null;
+    }
+
     // ─── GET ALL ROOMS ───
     public List<Room> getAllRooms() {
         List<Room> rooms = new ArrayList<>();

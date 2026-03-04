@@ -34,7 +34,7 @@ public class ReservationController {
             return "GUEST_NOT_FOUND";
         }
 
-        // Step 2 - Check room availability
+// Step 2 - Check room availability
         boolean available = roomDAO.checkAvailability(
                 reservation.getRoom().getRoomId(),
                 reservation.getCheckInDate().toString(),
@@ -44,13 +44,22 @@ public class ReservationController {
             return "ROOM_NOT_AVAILABLE";
         }
 
-        // Step 3 - Save reservation
+// Step 3 - Fetch FULL room details including RoomType
+        Room fullRoom = roomDAO.getRoomById(
+                reservation.getRoom().getRoomId());
+        if (fullRoom == null) {
+            return "ROOM_NOT_FOUND";
+        }
+        reservation.setRoom(fullRoom);
+        reservation.setGuest(guest);
+
+// Step 4 - Save reservation
         boolean saved = reservationDAO.saveReservation(reservation);
         if (!saved) {
             return "ERROR";
         }
 
-        // Step 4 - Generate bill
+// Step 5 - Generate bill
         Bill bill = new Bill(reservation);
         billDAO.saveBill(bill);
 
