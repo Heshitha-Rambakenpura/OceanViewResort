@@ -3,6 +3,7 @@ package com.oceanview.controller;
 import com.oceanview.dao.AuditLogDAO;
 import com.oceanview.dao.PaymentDAO;
 import com.oceanview.model.Payment;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -25,14 +26,12 @@ public class ReportController {
                                         int userId,
                                         String ipAddress) {
         List<Payment> payments = paymentDAO
-                .getPaymentsByDateRange(
-                        startDate, endDate);
-        if (payments.isEmpty()) {
-            return null;
-        }
-        // Log report viewed
+                .getPaymentsByDateRange(startDate, endDate);
         auditLogDAO.logAction(userId,
                 "REPORT_VIEWED", ipAddress);
+        if (payments == null) {
+            return new ArrayList<>();
+        }
         return payments;
     }
 
@@ -42,11 +41,19 @@ public class ReportController {
                                       int userId,
                                       String ipAddress) {
         List<Payment> payments = paymentDAO
-                .getPaymentsByDateRange(
-                        startDate, endDate);
-        // Log report exported
+                .getPaymentsByDateRange(startDate, endDate);
         auditLogDAO.logAction(userId,
                 "REPORT_EXPORTED", ipAddress);
+        if (payments == null) {
+            return new ArrayList<>();
+        }
         return payments;
+    }
+
+    // ─── GET TOTAL INCOME BY DATE RANGE ───
+    public double getTotalIncomeByDateRange(String startDate,
+                                            String endDate) {
+        return paymentDAO.getTotalIncomeByDateRange(
+                startDate, endDate);
     }
 }

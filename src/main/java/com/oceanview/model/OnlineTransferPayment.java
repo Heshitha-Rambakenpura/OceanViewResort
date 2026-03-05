@@ -24,6 +24,7 @@ public class OnlineTransferPayment extends Payment {
         this.referenceNumber = referenceNumber;
         this.transferDate    = transferDate;
         this.senderName      = senderName;
+        setPaymentMethod("ONLINE_TRANSFER");
     }
 
     // ─── STRATEGY PATTERN - processPayment implementation ───

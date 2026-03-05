@@ -21,6 +21,7 @@ public class CardPayment extends Payment {
         this.cardHolderName = cardHolderName;
         this.expiryDate     = expiryDate;
         this.cvv            = cvv;
+        setPaymentMethod("CARD");
     }
 
     // ─── STRATEGY PATTERN - processPayment implementation ───

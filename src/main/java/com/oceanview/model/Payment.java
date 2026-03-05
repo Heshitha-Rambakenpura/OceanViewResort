@@ -15,6 +15,7 @@ public abstract class Payment {
     private LocalDateTime paymentDate;
     private String paymentStatus;
     private String receiptNumber;
+    private String paymentMethod; // ─── ADD THIS LINE ───
 
     // ─── CONSTRUCTORS ───
     public Payment() {}
@@ -33,22 +34,37 @@ public abstract class Payment {
     }
 
     // ─── ABSTRACT METHOD - Strategy Pattern ───
-    // Each subclass implements differently
     public abstract boolean processPayment();
 
     // ─── GETTERS ───
-    public int getPaymentId()               { return paymentId; }
-    public Bill getBill()                   { return bill; }
-    public double getAmount()               { return amount; }
-    public LocalDateTime getPaymentDate()   { return paymentDate; }
-    public String getPaymentStatus()        { return paymentStatus; }
-    public String getReceiptNumber()        { return receiptNumber; }
+    public int getPaymentId()             { return paymentId; }
+    public Bill getBill()                 { return bill; }
+    public double getAmount()             { return amount; }
+    public LocalDateTime getPaymentDate() { return paymentDate; }
+    public String getPaymentStatus()      { return paymentStatus; }
+    public String getReceiptNumber()      { return receiptNumber; }
+    public String getPaymentMethod()      { return paymentMethod; }
 
     // ─── SETTERS ───
-    public void setPaymentId(int id)                { this.paymentId = id; }
-    public void setBill(Bill bill)                  { this.bill = bill; }
-    public void setAmount(double amount)            { this.amount = amount; }
-    public void setPaymentDate(LocalDateTime date)  { this.paymentDate = date; }
-    public void setPaymentStatus(String status)     { this.paymentStatus = status; }
-    public void setReceiptNumber(String receipt)    { this.receiptNumber = receipt; }
+    public void setPaymentId(int id) {
+        this.paymentId = id;
+    }
+    public void setBill(Bill bill) {
+        this.bill = bill;
+    }
+    public void setAmount(double amount) {
+        this.amount = amount;
+    }
+    public void setPaymentDate(LocalDateTime date) {
+        this.paymentDate = date;
+    }
+    public void setPaymentStatus(String status) {
+        this.paymentStatus = status;
+    }
+    public void setReceiptNumber(String receipt) {
+        this.receiptNumber = receipt;
+    }
+    public void setPaymentMethod(String paymentMethod) {
+        this.paymentMethod = paymentMethod;
+    }
 }

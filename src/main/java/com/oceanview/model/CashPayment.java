@@ -28,6 +28,7 @@ public class CashPayment extends Payment {
     public boolean processPayment() {
         if (amountTendered >= getAmount()) {
             this.changeAmount = calculateChange();
+            setPaymentMethod("CASH");
             setPaymentStatus("SUCCESS");
             return true;
         }

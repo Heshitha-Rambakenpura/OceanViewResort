@@ -12,6 +12,31 @@
             + "/reservation?action=list");
         return;
     }
+    int resId = bill.getReservation() != null
+                ? bill.getReservation().getReservationId()
+                : 0;
+    String guestName = (bill.getReservation() != null
+                        && bill.getReservation().getGuest() != null)
+                        ? bill.getReservation().getGuest().getName()
+                        : "N/A";
+    String roomNumber = (bill.getReservation() != null
+                         && bill.getReservation().getRoom() != null)
+                         ? bill.getReservation().getRoom().getRoomNumber()
+                         : "N/A";
+    String roomType = (bill.getReservation() != null
+                       && bill.getReservation().getRoom() != null
+                       && bill.getReservation().getRoom().getRoomType() != null)
+                       ? bill.getReservation().getRoom().getRoomType().getTypeName()
+                       : "N/A";
+    String checkIn = bill.getReservation() != null
+                     ? String.valueOf(bill.getReservation().getCheckInDate())
+                     : "N/A";
+    String checkOut = bill.getReservation() != null
+                      ? String.valueOf(bill.getReservation().getCheckOutDate())
+                      : "N/A";
+    int nights = bill.getReservation() != null
+                 ? bill.getReservation().getNumberOfNights()
+                 : 0;
 %>
 <!DOCTYPE html>
 <html>
@@ -33,8 +58,6 @@
         .back { margin-bottom: 20px; }
         .back a { color: #2E75B6; text-decoration: none; }
         h2 { color: #1F4E79; margin-bottom: 25px; }
-
-        /* ─── BILL SUMMARY ─── */
         .bill-summary {
             background: white; padding: 20px 25px;
             border-radius: 10px; margin-bottom: 25px;
@@ -53,15 +76,11 @@
             font-size: 12px; color: #888;
             text-transform: uppercase; margin-bottom: 4px;
         }
-        .summary-item strong {
-            font-size: 15px; color: #333;
-        }
+        .summary-item strong { font-size: 15px; color: #333; }
         .net-amount {
             font-size: 22px !important;
             color: #1F4E79 !important;
         }
-
-        /* ─── PAYMENT FORM ─── */
         .payment-card {
             background: white; padding: 25px;
             border-radius: 10px;
@@ -81,28 +100,11 @@
             border: 2px solid #ddd; border-radius: 6px;
             font-size: 14px;
         }
-        input:focus, select:focus {
-            outline: none; border-color: #2E75B6;
-        }
+        input:focus { outline: none; border-color: #2E75B6; }
         .form-row {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
+            grid-template-columns: 1fr 1fr; gap: 15px;
         }
-
-        /* ─── PAYMENT METHOD SECTIONS ─── */
-        .method-section {
-            display: none;
-            background: #f8f9fa; padding: 20px;
-            border-radius: 8px; margin-top: 15px;
-            border: 2px solid #eee;
-        }
-        .method-section.show { display: block; }
-        .method-section h4 {
-            color: #1F4E79; margin-bottom: 15px;
-        }
-
-        /* ─── METHOD BUTTONS ─── */
         .method-buttons {
             display: flex; gap: 15px; margin-bottom: 5px;
         }
@@ -123,8 +125,16 @@
         .method-btn .method-icon {
             font-size: 24px; margin-bottom: 5px;
         }
-
-        /* ─── SUBMIT BUTTON ─── */
+        .method-section {
+            display: none;
+            background: #f8f9fa; padding: 20px;
+            border-radius: 8px; margin-top: 15px;
+            border: 2px solid #eee;
+        }
+        .method-section.show { display: block; }
+        .method-section h4 {
+            color: #1F4E79; margin-bottom: 15px;
+        }
         .btn-submit {
             width: 100%; padding: 14px;
             background: #1F4E79; color: white;
@@ -133,8 +143,6 @@
             cursor: pointer; margin-top: 20px;
         }
         .btn-submit:hover { background: #2E75B6; }
-
-        /* ─── MESSAGES ─── */
         .error {
             background: #ffe0e0; color: #cc0000;
             padding: 12px; border-radius: 6px;
@@ -148,8 +156,10 @@
         .change-info {
             background: #EBF3FB; padding: 10px;
             border-radius: 6px; margin-top: 10px;
-            font-size: 14px; color: #1F4E79;
-            display: none;
+            font-size: 14px; color: #1F4E79; display: none;
+        }
+        .readonly-input {
+            background: #f5f5f5; cursor: not-allowed;
         }
     </style>
 </head>
@@ -164,14 +174,13 @@
 
 <div class="container">
     <div class="back">
-        <a href="${pageContext.request.contextPath}/bill?reservationId=<%= bill.getReservation().getReservationId() %>">
+        <a href="${pageContext.request.contextPath}/bill?reservationId=<%= resId %>">
             ← Back to Bill
         </a>
     </div>
 
     <h2>💳 Make Payment</h2>
 
-    <%-- ─── MESSAGES ─── --%>
     <% if (request.getAttribute("error") != null) { %>
         <div class="error">${error}</div>
     <% } %>
@@ -185,31 +194,30 @@
         <div class="summary-grid">
             <div class="summary-item">
                 <p>Guest Name</p>
-                <strong>${bill.reservation.guest.name}</strong>
+                <strong><%= guestName %></strong>
             </div>
             <div class="summary-item">
                 <p>Room</p>
                 <strong>
-                    ${bill.reservation.room.roomNumber}
-                    - ${bill.reservation.room.roomType.typeName}
+                    <%= roomNumber %> - <%= roomType %>
                 </strong>
             </div>
             <div class="summary-item">
                 <p>Check In</p>
-                <strong>${bill.reservation.checkInDate}</strong>
+                <strong><%= checkIn %></strong>
             </div>
             <div class="summary-item">
                 <p>Check Out</p>
-                <strong>${bill.reservation.checkOutDate}</strong>
+                <strong><%= checkOut %></strong>
             </div>
             <div class="summary-item">
                 <p>Nights</p>
-                <strong>${bill.reservation.numberOfNights}</strong>
+                <strong><%= nights %></strong>
             </div>
             <div class="summary-item">
                 <p>Net Amount</p>
                 <strong class="net-amount">
-                    Rs. ${bill.netAmount}
+                    Rs. <%= bill.getNetAmount() %>
                 </strong>
             </div>
         </div>
@@ -221,32 +229,41 @@
 
         <form method="post"
               action="${pageContext.request.contextPath}/payment"
-              id="paymentForm">
+              id="paymentForm"
+              onsubmit="return validateForm()">
 
             <input type="hidden" name="billId"
-                   value="${bill.billId}" />
+                   value="<%= bill.getBillId() %>" />
             <input type="hidden" name="amount"
-                   value="${bill.netAmount}" />
+                   value="<%= bill.getNetAmount() %>" />
             <input type="hidden" name="reservationId"
-                   value="${bill.reservation.reservationId}" />
-            <input type="hidden" name="paymentMethod"
-                   id="selectedMethod" value="" />
+                   value="<%= resId %>" />
+
+            <%-- IMPORTANT - paymentMethod is a real
+                 select not hidden input --%>
+            <input type="hidden"
+                   name="paymentMethod"
+                   id="paymentMethodInput"
+                   value="" />
 
             <%-- ─── METHOD BUTTONS ─── --%>
             <div class="method-buttons">
                 <div class="method-btn"
+                     id="btn_CASH"
                      onclick="selectMethod('CASH', this)">
                     <div class="method-icon">💵</div>
                     <div>Cash</div>
                 </div>
                 <div class="method-btn"
+                     id="btn_CARD"
                      onclick="selectMethod('CARD', this)">
                     <div class="method-icon">💳</div>
                     <div>Card</div>
                 </div>
                 <div class="method-btn"
-                     onclick="selectMethod('ONLINE_TRANSFER',
-                                           this)">
+                     id="btn_ONLINE"
+                     onclick="selectMethod(
+                         'ONLINE_TRANSFER', this)">
                     <div class="method-icon">🏦</div>
                     <div>Online Transfer</div>
                 </div>
@@ -258,19 +275,19 @@
                 <div class="form-group">
                     <label>Net Amount</label>
                     <input type="text"
-                           value="Rs. ${bill.netAmount}"
-                           readonly
-                           style="background:#f5f5f5;" />
+                           value="Rs. <%= bill.getNetAmount() %>"
+                           class="readonly-input"
+                           readonly />
                 </div>
                 <div class="form-group">
                     <label>Amount Tendered (Rs.) *</label>
                     <input type="number"
                            name="amountTendered"
                            id="amountTendered"
-                           min="${bill.netAmount}"
+                           min="<%= bill.getNetAmount() %>"
                            step="0.01"
                            placeholder="Enter amount given"
-                           onchange="calcChange()" />
+                           oninput="calcChange()" />
                 </div>
                 <div class="change-info" id="changeInfo">
                     💰 Change to return: Rs.
@@ -283,26 +300,34 @@
                 <h4>💳 Card Payment</h4>
                 <div class="form-group">
                     <label>Card Number *</label>
-                    <input type="text" name="cardNumber"
+                    <input type="text"
+                           name="cardNumber"
+                           id="cardNumber"
                            placeholder="1234 5678 9012 3456"
                            maxlength="19"
                            oninput="formatCard(this)" />
                 </div>
                 <div class="form-group">
                     <label>Card Holder Name *</label>
-                    <input type="text" name="cardHolderName"
+                    <input type="text"
+                           name="cardHolderName"
+                           id="cardHolderName"
                            placeholder="Name on card" />
                 </div>
                 <div class="form-row">
                     <div class="form-group">
                         <label>Expiry Date *</label>
-                        <input type="text" name="expiryDate"
+                        <input type="text"
+                               name="expiryDate"
+                               id="expiryDate"
                                placeholder="MM/YY"
                                maxlength="5" />
                     </div>
                     <div class="form-group">
                         <label>CVV *</label>
-                        <input type="password" name="cvv"
+                        <input type="password"
+                               name="cvv"
+                               id="cvv"
                                placeholder="123"
                                maxlength="3" />
                     </div>
@@ -315,30 +340,39 @@
                 <h4>🏦 Online Transfer</h4>
                 <div class="form-group">
                     <label>Bank Name *</label>
-                    <input type="text" name="bankName"
+                    <input type="text"
+                           name="bankName"
+                           id="bankName"
                            placeholder="e.g. Bank of Ceylon" />
                 </div>
                 <div class="form-group">
                     <label>Reference Number *</label>
-                    <input type="text" name="referenceNumber"
+                    <input type="text"
+                           name="referenceNumber"
+                           id="referenceNumber"
                            placeholder="Transaction reference" />
                 </div>
                 <div class="form-group">
                     <label>Transfer Date *</label>
-                    <input type="date" name="transferDate" />
+                    <input type="date"
+                           name="transferDate"
+                           id="transferDate" />
                 </div>
                 <div class="form-group">
                     <label>Sender Name *</label>
-                    <input type="text" name="senderName"
+                    <input type="text"
+                           name="senderName"
+                           id="senderName"
                            placeholder="Account holder name" />
                 </div>
             </div>
 
-            <button type="submit" class="btn-submit"
+            <button type="submit"
+                    class="btn-submit"
                     id="submitBtn"
-                    onclick="return validateForm()"
                     style="display:none;">
-                ✅ Confirm Payment of Rs. ${bill.netAmount}
+                ✅ Confirm Payment of
+                Rs. <%= bill.getNetAmount() %>
             </button>
 
         </form>
@@ -347,34 +381,37 @@
 
 <script>
 var selectedPaymentMethod = '';
-var netAmount = ${bill.netAmount};
+var netAmount = <%= bill.getNetAmount() %>;
 
 function selectMethod(method, btn) {
-    // Update selected method
     selectedPaymentMethod = method;
-    document.getElementById('selectedMethod').value = method;
 
-    // Update button styles
+    // ─── Set hidden input value ───
+    document.getElementById('paymentMethodInput').value
+        = method;
+
+    // ─── Update button styles ───
     document.querySelectorAll('.method-btn')
             .forEach(b => b.classList.remove('selected'));
     btn.classList.add('selected');
 
-    // Hide all sections
+    // ─── Hide all sections ───
     document.querySelectorAll('.method-section')
             .forEach(s => s.classList.remove('show'));
 
-    // Show selected section
+    // ─── Show selected section ───
     document.getElementById(method + '_section')
             .classList.add('show');
 
-    // Show submit button
+    // ─── Show submit button ───
     document.getElementById('submitBtn').style.display
         = 'block';
 }
 
 function calcChange() {
     var tendered = parseFloat(
-        document.getElementById('amountTendered').value);
+        document.getElementById('amountTendered').value
+    ) || 0;
     if (tendered >= netAmount) {
         var change = (tendered - netAmount).toFixed(2);
         document.getElementById('changeAmount')
@@ -395,21 +432,50 @@ function formatCard(input) {
 }
 
 function validateForm() {
-    if (!selectedPaymentMethod) {
+    // ─── Verify method is selected ───
+    var method = document.getElementById(
+                     'paymentMethodInput').value;
+
+    if (!method || method === '') {
         alert('Please select a payment method!');
         return false;
     }
 
-    if (selectedPaymentMethod === 'CASH') {
+    // ─── Validate CASH ───
+    if (method === 'CASH') {
         var tendered = parseFloat(
             document.getElementById(
-                'amountTendered').value);
-        if (!tendered || tendered < netAmount) {
+                'amountTendered').value) || 0;
+        if (tendered < netAmount) {
             alert('Amount tendered must be at least Rs. '
                   + netAmount);
             return false;
         }
     }
+
+    // ─── Validate CARD ───
+    if (method === 'CARD') {
+        if (!document.getElementById('cardNumber').value
+            || !document.getElementById('cardHolderName').value
+            || !document.getElementById('expiryDate').value
+            || !document.getElementById('cvv').value) {
+            alert('Please fill all card details!');
+            return false;
+        }
+    }
+
+    // ─── Validate ONLINE TRANSFER ───
+    if (method === 'ONLINE_TRANSFER') {
+        if (!document.getElementById('bankName').value
+            || !document.getElementById(
+                   'referenceNumber').value
+            || !document.getElementById('transferDate').value
+            || !document.getElementById('senderName').value) {
+            alert('Please fill all transfer details!');
+            return false;
+        }
+    }
+
     return true;
 }
 </script>

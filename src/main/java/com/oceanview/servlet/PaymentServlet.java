@@ -2,8 +2,8 @@ package com.oceanview.servlet;
 
 import com.oceanview.controller.PaymentController;
 import com.oceanview.model.Bill;
-import com.oceanview.model.CardPayment;
 import com.oceanview.model.CashPayment;
+import com.oceanview.model.CardPayment;
 import com.oceanview.model.OnlineTransferPayment;
 import com.oceanview.model.Payment;
 import com.oceanview.model.User;
@@ -29,7 +29,7 @@ public class PaymentServlet extends HttpServlet {
         this.paymentController = new PaymentController();
     }
 
-    // ─── GET ───
+    // ─── GET - Show Payment Page ───
     @Override
     protected void doGet(HttpServletRequest request,
                          HttpServletResponse response)
@@ -43,8 +43,8 @@ public class PaymentServlet extends HttpServlet {
 
         String action = request.getParameter("action");
 
-        // ─── PAYMENT SUMMARY ───
         if ("summary".equals(action)) {
+            // ─── PAYMENT SUMMARY ───
             List<Payment> payments = paymentController
                     .getAllPayments();
             double totalIncome     = paymentController
@@ -70,7 +70,7 @@ public class PaymentServlet extends HttpServlet {
                     .forward(request, response);
 
         } else {
-            // ─── MAKE PAYMENT PAGE ───
+            // ─── MAKE PAYMENT ───
             String reservationIdParam =
                     request.getParameter("reservationId");
 
@@ -87,31 +87,15 @@ public class PaymentServlet extends HttpServlet {
             Bill bill = paymentController
                     .getBillByReservation(reservationId);
 
-            if (bill == null) {
-                response.sendRedirect(
-                        request.getContextPath()
-                                + "/reservation?action=list");
-                return;
-            }
-
-            // If already paid redirect to bill
-            if (bill.isPaid()) {
-                response.sendRedirect(
-                        request.getContextPath()
-                                + "/bill?reservationId=" + reservationId);
-                return;
-            }
-
             request.setAttribute("bill", bill);
-            request.setAttribute("reservationId",
-                    reservationId);
+            request.setAttribute("reservationId", reservationId);
             request.getRequestDispatcher(
                             "/jsp/payment/make_payment.jsp")
                     .forward(request, response);
         }
     }
 
-    // ─── POST ───
+    // ─── POST - Process Payment ───
     @Override
     protected void doPost(HttpServletRequest request,
                           HttpServletResponse response)
@@ -126,16 +110,13 @@ public class PaymentServlet extends HttpServlet {
         String paymentMethod = request.getParameter(
                 "paymentMethod");
         int billId           = Integer.parseInt(
-                request.getParameter(
-                        "billId"));
+                request.getParameter("billId"));
         double amount        = Double.parseDouble(
-                request.getParameter(
-                        "amount"));
+                request.getParameter("amount"));
         String ipAddress     = request.getRemoteAddr();
 
         HttpSession session  = request.getSession();
-        User user            = (User) session
-                .getAttribute("user");
+        User user            = (User) session.getAttribute("user");
 
         // Create bill object
         Bill bill = new Bill();
@@ -147,32 +128,20 @@ public class PaymentServlet extends HttpServlet {
                 amount, request);
 
         String result = paymentController.processPayment(
-                payment, user.getUserId(),
+                payment,
+                user.getUserId(),
                 ipAddress);
 
         if ("SUCCESS".equals(result)) {
-            // Get full bill to show on success
-            int reservationId = Integer.parseInt(
-                    request.getParameter("reservationId"));
-            Bill fullBill = paymentController
-                    .getBillByReservation(
-                            reservationId);
-            request.setAttribute("bill", fullBill);
             request.setAttribute("success",
-                    "✅ Payment successful! Receipt: "
+                    "Payment processed successfully! Receipt: "
                             + payment.getReceiptNumber());
         } else {
-            // Reload bill for error display
-            int reservationId = Integer.parseInt(
-                    request.getParameter("reservationId"));
-            Bill fullBill = paymentController
-                    .getBillByReservation(
-                            reservationId);
-            request.setAttribute("bill", fullBill);
             request.setAttribute("error",
-                    "❌ Payment failed! Please try again.");
+                    "Payment failed! Please try again.");
         }
 
+        request.setAttribute("bill", bill);
         request.getRequestDispatcher(
                         "/jsp/payment/make_payment.jsp")
                 .forward(request, response);
@@ -194,7 +163,8 @@ public class PaymentServlet extends HttpServlet {
                         request.getParameter("cardNumber"),
                         request.getParameter("cardHolderName"),
                         request.getParameter("expiryDate"),
-                        request.getParameter("cvv"));
+                        request.getParameter("cvv")
+                );
 
             case "ONLINE_TRANSFER":
                 return new OnlineTransferPayment(
@@ -203,7 +173,8 @@ public class PaymentServlet extends HttpServlet {
                         request.getParameter("referenceNumber"),
                         LocalDate.parse(
                                 request.getParameter("transferDate")),
-                        request.getParameter("senderName"));
+                        request.getParameter("senderName")
+                );
 
             default:
                 return new CashPayment(bill, amount, amount);
