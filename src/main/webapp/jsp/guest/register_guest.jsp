@@ -106,9 +106,9 @@
                        placeholder="Enter full name" required />
             </div>
             <div class="form-group">
-                <label>NIC Number *</label>
+                <label>NIC Number / Passport Number *</label>
                 <input type="text" name="nic"
-                       placeholder="Enter NIC number" required />
+                       placeholder="Enter NIC number or Passport Number" required />
             </div>
             <div class="form-group">
                 <label>Nationality *</label>

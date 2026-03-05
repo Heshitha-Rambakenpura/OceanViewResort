@@ -65,8 +65,8 @@
 
 <div class="container">
     <div class="back">
-        <a href="${pageContext.request.contextPath}/reservation?action=list">
-            ← Back to Reservations
+        <a href="${pageContext.request.contextPath}/jsp/auth/receptionist_dashboard.jsp">
+            ← Back to Dashboard
         </a>
     </div>
 

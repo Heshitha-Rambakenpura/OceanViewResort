@@ -17,6 +17,8 @@
             padding: 15px 30px;
             display: flex; justify-content: space-between;
         }
+        .back { margin-bottom: 20px; }
+        .back a { color: #2E75B6; text-decoration: none; }
         .navbar a { color: white; text-decoration: none; margin-left: 15px; }
         .container { padding: 30px; }
         h2 { color: #1F4E79; margin-bottom: 20px; }
@@ -72,6 +74,11 @@
 </div>
 
 <div class="container">
+    <div class="back">
+        <a href="${pageContext.request.contextPath}/jsp/auth/receptionist_dashboard.jsp">
+            ← Back to Dashboard
+        </a>
+    </div>
     <h2>Reservation List</h2>
     <div class="actions">
         <a href="${pageContext.request.contextPath}/reservation"

@@ -17,6 +17,8 @@
             padding: 15px 30px;
             display: flex; justify-content: space-between;
         }
+        .back { margin-bottom: 20px; }
+        .back a { color: #2E75B6; text-decoration: none; }
         .navbar a { color: white; text-decoration: none; margin-left: 15px; }
         .container { padding: 30px; }
         h2 { color: #1F4E79; margin-bottom: 20px; }
@@ -63,6 +65,11 @@
 </div>
 
 <div class="container">
+    <div class="back">
+        <a href="${pageContext.request.contextPath}/jsp/auth/receptionist_dashboard.jsp">
+            ← Back to Dashboard
+        </a>
+    </div>
     <h2>Guest List</h2>
     <div class="actions">
         <a href="${pageContext.request.contextPath}/guest"
@@ -76,8 +83,9 @@
             <tr>
                 <th>Guest ID</th>
                 <th>Name</th>
-                <th>NIC</th>
+                <th>NIC or Passport No</th>
                 <th>Nationality</th>
+                <th>Address</th>
                 <th>Contact</th>
                 <th>Email</th>
             </tr>
@@ -98,6 +106,7 @@
                             <td>${guest.name}</td>
                             <td>${guest.nic}</td>
                             <td>${guest.nationality}</td>
+                            <td>${guest.address}</td>
                             <td>${guest.contactNumber}</td>
                             <td>${guest.email}</td>
                         </tr>

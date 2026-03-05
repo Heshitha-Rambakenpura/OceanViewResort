@@ -102,18 +102,6 @@
             <h3>View Reservations</h3>
             <p>Manage all reservations</p>
         </a>
-        <a href="${pageContext.request.contextPath}/jsp/payment/print_bill.jsp"
-           class="card">
-            <div class="icon">🖨️</div>
-            <h3>Print Bill</h3>
-            <p>Search and print guest bill</p>
-        </a>
-        <a href="${pageContext.request.contextPath}/payment"
-           class="card">
-            <div class="icon">💳</div>
-            <h3>Make Payment</h3>
-            <p>Process guest payments</p>
-        </a>
         <a href="${pageContext.request.contextPath}/payment?action=summary"
            class="card">
             <div class="icon">💰</div>
@@ -123,7 +111,7 @@
         <a href="${pageContext.request.contextPath}/room"
            class="card">
             <div class="icon">🛏️</div>
-            <h3>Room Management</h3>
+            <h3>Room Availability</h3>
             <p>View all rooms and availability</p>
         </a>
         <a href="${pageContext.request.contextPath}/jsp/auth/help.jsp"
