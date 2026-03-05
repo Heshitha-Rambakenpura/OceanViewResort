@@ -21,14 +21,13 @@
             display: flex; justify-content: space-between;
         }
         .navbar a {
-            color: white; text-decoration: none; margin-left: 15px;
+            color: white; text-decoration: none;
+            margin-left: 15px;
         }
         .container { padding: 30px; }
         h2 { color: #1F4E79; margin-bottom: 25px; }
         .back { margin-bottom: 20px; }
         .back a { color: #2E75B6; text-decoration: none; }
-
-        /* ─── STATS ─── */
         .stats {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
@@ -44,14 +43,12 @@
             margin-bottom: 10px; text-transform: uppercase;
         }
         .stat-card p {
-            font-size: 26px; font-weight: bold; color: #1F4E79;
+            font-size: 26px; font-weight: bold;
         }
         .stat-card.income p  { color: #006600; }
         .stat-card.cash p    { color: #1F4E79; }
         .stat-card.card p    { color: #cc6600; }
         .stat-card.online p  { color: #6600cc; }
-
-        /* ─── FILTER ─── */
         .filter-bar {
             background: white; padding: 15px 20px;
             border-radius: 10px; margin-bottom: 20px;
@@ -70,24 +67,19 @@
         .filter-btn:hover {
             background: #1F4E79; color: white;
         }
-
-        /* ─── SEARCH ─── */
         .search-bar {
             background: white; padding: 15px 20px;
             border-radius: 10px; margin-bottom: 20px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            display: flex; gap: 10px; align-items: center;
         }
         .search-bar input {
-            flex: 1; padding: 8px 12px;
+            width: 100%; padding: 8px 12px;
             border: 2px solid #ddd; border-radius: 6px;
             font-size: 14px;
         }
         .search-bar input:focus {
             outline: none; border-color: #2E75B6;
         }
-
-        /* ─── TABLE ─── */
         table {
             width: 100%; border-collapse: collapse;
             background: white; border-radius: 10px;
@@ -103,20 +95,24 @@
             font-size: 14px;
         }
         tr:hover td { background: #EBF3FB; }
-        .badge {
+        .status-badge {
+            padding: 4px 10px; border-radius: 20px;
+            font-size: 12px; font-weight: bold;
+            background: #e0ffe0; color: #006600;
+        }
+        .method-badge {
             padding: 4px 10px; border-radius: 20px;
             font-size: 12px; font-weight: bold;
         }
-        .SUCCESS { background: #e0ffe0; color: #006600; }
-        .FAILED  { background: #ffe0e0; color: #cc0000; }
-        .PENDING { background: #fff3e0; color: #cc6600; }
-        .method-badge {
-            padding: 4px 10px; border-radius: 20px;
-            font-size: 12px;
+        .CASH {
+            background: #e8f4fd; color: #1F4E79;
         }
-        .CASH            { background: #e8f4fd; color: #1F4E79; }
-        .CARD            { background: #fff3e0; color: #cc6600; }
-        .ONLINE_TRANSFER { background: #f3e8ff; color: #6600cc; }
+        .CARD {
+            background: #fff3e0; color: #cc6600;
+        }
+        .ONLINE_TRANSFER {
+            background: #f3e8ff; color: #6600cc;
+        }
         .no-data {
             text-align: center; padding: 40px;
             color: #888; font-size: 16px;
@@ -171,7 +167,7 @@
     <div class="filter-bar">
         <label>Filter by Method:</label>
         <button class="filter-btn active"
-                onclick="filterPayments('all', this)">
+                onclick="filterPayments('ALL', this)">
             All
         </button>
         <button class="filter-btn"
@@ -183,21 +179,21 @@
             💳 Card
         </button>
         <button class="filter-btn"
-                onclick="filterPayments('ONLINE_TRANSFER', this)">
+                onclick="filterPayments('ONLINE_TRANSFER',
+                                        this)">
             🏦 Online
         </button>
     </div>
 
     <%-- ─── SEARCH ─── --%>
     <div class="search-bar">
-        <input type="text"
-               id="searchInput"
+        <input type="text" id="searchInput"
                placeholder="🔍 Search by receipt number or guest name..."
                onkeyup="searchPayments()" />
     </div>
 
     <%-- ─── TABLE ─── --%>
-    <table id="paymentsTable">
+    <table>
         <thead>
             <tr>
                 <th>Receipt No</th>
@@ -220,9 +216,11 @@
                     </tr>
                 </c:when>
                 <c:otherwise>
-                    <c:forEach var="payment" items="${payments}">
-                        <tr data-method="${payment.bill.reservation != null ?
-                            'CASH' : 'CASH'}">
+                    <c:forEach var="payment"
+                               items="${payments}">
+                        <%-- data-method uses paymentMethod
+                             not paymentStatus --%>
+                        <tr data-method="${payment.paymentMethod}">
                             <td>${payment.receiptNumber}</td>
                             <td>
                                 ${payment.bill.reservation.guest.name}
@@ -235,13 +233,15 @@
                             </td>
                             <td>Rs. ${payment.amount}</td>
                             <td>
-                                <span class="method-badge CASH">
-                                    ${payment.paymentStatus}
+                                <%-- Show paymentMethod
+                                     not paymentStatus --%>
+                                <span class="method-badge ${payment.paymentMethod}">
+                                    ${payment.paymentMethod}
                                 </span>
                             </td>
                             <td>${payment.paymentDate}</td>
                             <td>
-                                <span class="badge ${payment.paymentStatus}">
+                                <span class="status-badge">
                                     ${payment.paymentStatus}
                                 </span>
                             </td>
@@ -261,22 +261,25 @@ function filterPayments(method, btn) {
 
     document.querySelectorAll('#paymentsBody tr')
             .forEach(row => {
-        if (method === 'all') {
+        if (method === 'ALL') {
             row.style.display = '';
         } else {
+            // ─── Compare data-method attribute ───
+            var rowMethod = row.getAttribute('data-method');
             row.style.display =
-                row.dataset.method === method ? '' : 'none';
+                rowMethod === method ? '' : 'none';
         }
     });
 }
 
 function searchPayments() {
-    var input  = document.getElementById('searchInput')
-                         .value.toLowerCase();
+    var input = document.getElementById('searchInput')
+                        .value.toLowerCase();
     document.querySelectorAll('#paymentsBody tr')
             .forEach(row => {
-        var text = row.textContent.toLowerCase();
-        row.style.display = text.includes(input) ? '' : 'none';
+        row.style.display =
+            row.textContent.toLowerCase()
+               .includes(input) ? '' : 'none';
     });
 }
 </script>
