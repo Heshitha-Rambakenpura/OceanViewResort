@@ -1,5 +1,4 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%-- Check session and role --%>
 <%
     if (session.getAttribute("user") == null) {
         response.sendRedirect(request.getContextPath() + "/login");
@@ -26,7 +25,9 @@
             align-items: center;
         }
         .navbar h1 { font-size: 20px; }
-        .navbar a { color: white; text-decoration: none; margin-left: 20px; }
+        .navbar a {
+            color: white; text-decoration: none; margin-left: 20px;
+        }
         .container { padding: 30px; }
         .welcome {
             background: white; padding: 20px 30px;
@@ -35,7 +36,7 @@
             border-left: 5px solid #cc0000;
         }
         .welcome h2 { color: #1F4E79; }
-        .welcome p { color: #666; margin-top: 5px; }
+        .welcome p  { color: #666; margin-top: 5px; }
         .cards {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -52,7 +53,7 @@
         .card:hover { transform: translateY(-5px); }
         .card .icon { font-size: 40px; margin-bottom: 15px; }
         .card h3 { color: #1F4E79; margin-bottom: 8px; }
-        .card p { color: #888; font-size: 13px; }
+        .card p  { color: #888; font-size: 13px; }
         .role-badge {
             display: inline-block;
             background: #cc0000; color: white;
@@ -69,7 +70,9 @@
     </h1>
     <div>
         <span>Welcome, ${sessionScope.userName}</span>
-        <a href="${pageContext.request.contextPath}/logout">Logout</a>
+        <a href="${pageContext.request.contextPath}/logout">
+            Logout
+        </a>
     </div>
 </div>
 
@@ -83,32 +86,14 @@
         <a href="${pageContext.request.contextPath}/admin?action=manageUsers"
            class="card">
             <div class="icon">👥</div>
-            <h3>Manage Users</h3>
-            <p>Create, modify and deactivate staff accounts</p>
-        </a>
-        <a href="${pageContext.request.contextPath}/admin?action=auditLogs"
-           class="card">
-            <div class="icon">📋</div>
-            <h3>View Audit Logs</h3>
-            <p>Monitor all system activities</p>
+            <h3>Manage User Accounts</h3>
+            <p>Create and manage staff accounts</p>
         </a>
         <a href="${pageContext.request.contextPath}/admin?action=maintainSystem"
            class="card">
             <div class="icon">⚙️</div>
             <h3>Maintain System</h3>
             <p>System configuration and maintenance</p>
-        </a>
-        <a href="${pageContext.request.contextPath}/jsp/auth/receptionist_dashboard.jsp"
-           class="card">
-            <div class="icon">🛏️</div>
-            <h3>View Reservations</h3>
-            <p>Monitor reservation activities</p>
-        </a>
-        <a href="${pageContext.request.contextPath}/report"
-           class="card">
-            <div class="icon">📊</div>
-            <h3>View Reports</h3>
-            <p>Access financial reports</p>
         </a>
         <a href="${pageContext.request.contextPath}/jsp/auth/help.jsp"
            class="card">

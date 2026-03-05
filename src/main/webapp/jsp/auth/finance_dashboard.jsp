@@ -1,5 +1,4 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%-- Check session and role --%>
 <%
     if (session.getAttribute("user") == null) {
         response.sendRedirect(request.getContextPath() + "/login");
@@ -26,7 +25,9 @@
             align-items: center;
         }
         .navbar h1 { font-size: 20px; }
-        .navbar a { color: white; text-decoration: none; margin-left: 20px; }
+        .navbar a {
+            color: white; text-decoration: none; margin-left: 20px;
+        }
         .container { padding: 30px; }
         .welcome {
             background: white; padding: 20px 30px;
@@ -35,7 +36,7 @@
             border-left: 5px solid #2E75B6;
         }
         .welcome h2 { color: #1F4E79; }
-        .welcome p { color: #666; margin-top: 5px; }
+        .welcome p  { color: #666; margin-top: 5px; }
         .cards {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -52,25 +53,13 @@
         .card:hover { transform: translateY(-5px); }
         .card .icon { font-size: 40px; margin-bottom: 15px; }
         .card h3 { color: #1F4E79; margin-bottom: 8px; }
-        .card p { color: #888; font-size: 13px; }
+        .card p  { color: #888; font-size: 13px; }
         .role-badge {
             display: inline-block;
             background: #2E75B6; color: white;
             padding: 3px 10px; border-radius: 20px;
             font-size: 12px; margin-left: 10px;
         }
-        .stats {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 20px; margin-bottom: 30px;
-        }
-        .stat-card {
-            background: white; padding: 20px;
-            border-radius: 10px; text-align: center;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-        .stat-card h3 { color: #888; font-size: 13px; margin-bottom: 8px; }
-        .stat-card p { color: #1F4E79; font-size: 28px; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -81,7 +70,9 @@
     </h1>
     <div>
         <span>Welcome, ${sessionScope.userName}</span>
-        <a href="${pageContext.request.contextPath}/logout">Logout</a>
+        <a href="${pageContext.request.contextPath}/logout">
+            Logout
+        </a>
     </div>
 </div>
 
@@ -98,7 +89,7 @@
             <h3>Income Reports</h3>
             <p>Generate and export income reports by date range</p>
         </a>
-        <a href="${pageContext.request.contextPath}/report?action=summary"
+        <a href="${pageContext.request.contextPath}/payment?action=summary"
            class="card">
             <div class="icon">💰</div>
             <h3>Payment Summary</h3>
