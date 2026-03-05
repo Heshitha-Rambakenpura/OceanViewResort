@@ -102,6 +102,12 @@
             <h3>View Reservations</h3>
             <p>Manage all reservations</p>
         </a>
+        <a href="${pageContext.request.contextPath}/jsp/payment/print_bill.jsp"
+           class="card">
+            <div class="icon">🖨️</div>
+            <h3>Print Bill</h3>
+            <p>Search and print guest bill</p>
+        </a>
         <a href="${pageContext.request.contextPath}/payment"
            class="card">
             <div class="icon">💳</div>

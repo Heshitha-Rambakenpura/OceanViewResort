@@ -29,7 +29,6 @@ public class BillServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request,
                          HttpServletResponse response)
             throws ServletException, IOException {
-        // Check session
         if (!isLoggedIn(request)) {
             response.sendRedirect(
                     request.getContextPath() + "/login");
@@ -49,20 +48,52 @@ public class BillServlet extends HttpServlet {
 
         int reservationId = Integer.parseInt(reservationIdParam);
 
-        // Get reservation with full details
-        Reservation reservation = reservationController
-                .getReservationById(
-                        reservationId);
+        // Check if JSON requested (from print bill page)
+        String format = request.getParameter("format");
 
-        // Get bill for this reservation
+        Reservation reservation = reservationController
+                .getReservationById(reservationId);
         Bill bill = billDAO.getBillByReservationId(reservationId);
 
         if (bill == null || reservation == null) {
-            response.sendRedirect(
-                    request.getContextPath()
-                            + "/reservation?action=list");
+            if ("json".equals(format)) {
+                response.setContentType("application/json");
+                response.getWriter().write("{\"error\":\"not found\"}");
+            } else {
+                response.sendRedirect(
+                        request.getContextPath()
+                                + "/reservation?action=list");
+            }
             return;
         }
+
+        bill.setReservation(reservation);
+
+        if ("json".equals(format)) {
+            // Return JSON for print bill page
+            response.setContentType("application/json");
+            String json = "{"
+                    + "\"billId\":" + bill.getBillId() + ","
+                    + "\"generatedDate\":\"" + bill.getGeneratedDate() + "\","
+                    + "\"reservationId\":" + reservation.getReservationId() + ","
+                    + "\"guestName\":\"" + reservation.getGuest().getName() + "\","
+                    + "\"roomNumber\":\"" + reservation.getRoom().getRoomNumber() + "\","
+                    + "\"roomType\":\"" + reservation.getRoom().getRoomType().getTypeName() + "\","
+                    + "\"nights\":" + reservation.getNumberOfNights() + ","
+                    + "\"basePrice\":" + reservation.getRoom().getRoomType().getBasePrice() + ","
+                    + "\"totalAmount\":" + bill.getTotalAmount() + ","
+                    + "\"taxAmount\":" + bill.getTaxAmount() + ","
+                    + "\"discount\":" + bill.getDiscount() + ","
+                    + "\"netAmount\":" + bill.getNetAmount() + ","
+                    + "\"isPaid\":" + bill.isPaid()
+                    + "}";
+            response.getWriter().write(json);
+        } else {
+            request.setAttribute("bill", bill);
+            request.getRequestDispatcher("/jsp/payment/bill.jsp")
+                    .forward(request, response);
+        }
+
 
         // Set reservation in bill for JSP
         bill.setReservation(reservation);
