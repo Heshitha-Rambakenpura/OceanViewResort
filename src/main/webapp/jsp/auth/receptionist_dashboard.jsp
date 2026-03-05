@@ -114,6 +114,12 @@
             <h3>View Reports</h3>
             <p>View payment summaries</p>
         </a>
+        <a href="${pageContext.request.contextPath}/jsp/auth/help.jsp"
+           class="card">
+            <div class="icon">❓</div>
+            <h3>Help Section</h3>
+            <p>System usage guidelines</p>
+        </a>
     </div>
 </div>
 
