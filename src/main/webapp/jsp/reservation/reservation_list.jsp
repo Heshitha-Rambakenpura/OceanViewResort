@@ -117,8 +117,8 @@
                                 </span>
                             </td>
                             <td>
-                                <a href="${pageContext.request.contextPath}/reservation?action=view&id=${res.reservationId}"
-                                   class="btn btn-info">View</a>
+                                <a href="${pageContext.request.contextPath}/bill?reservationId=${res.reservationId}"
+                                   class="btn btn-info">Bill</a>
                                 <a href="${pageContext.request.contextPath}/payment?reservationId=${res.reservationId}"
                                    class="btn btn-primary">Pay</a>
                                 <c:if test="${res.status == 'CONFIRMED'}">
