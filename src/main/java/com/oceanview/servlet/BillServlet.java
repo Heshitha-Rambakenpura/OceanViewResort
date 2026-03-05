@@ -6,14 +6,14 @@ import com.oceanview.model.Bill;
 import com.oceanview.model.Reservation;
 import javax.servlet.*;
 import javax.servlet.http.*;
-import javax.servlet.annotation.*;
+
 import java.io.IOException;
 
 /**
  * BillServlet - Handles bill viewing
  * @version 1.0.0
  */
-@WebServlet("/bill")
+
 public class BillServlet extends HttpServlet {
 
     private BillDAO billDAO;

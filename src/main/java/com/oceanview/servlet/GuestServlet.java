@@ -5,7 +5,7 @@ import com.oceanview.model.Guest;
 import com.oceanview.model.User;
 import javax.servlet.*;
 import javax.servlet.http.*;
-import javax.servlet.annotation.*;
+
 import java.io.IOException;
 import java.util.List;
 
@@ -13,7 +13,7 @@ import java.util.List;
  * GuestServlet - Handles guest operations
  * @version 1.0.0
  */
-@WebServlet("/guest")
+
 public class GuestServlet extends HttpServlet {
 
     private GuestController guestController;

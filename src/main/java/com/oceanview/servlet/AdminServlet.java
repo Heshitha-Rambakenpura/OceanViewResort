@@ -5,14 +5,13 @@ import com.oceanview.dao.UserDAO;
 import com.oceanview.model.User;
 import javax.servlet.*;
 import javax.servlet.http.*;
-import javax.servlet.annotation.*;
+
 import java.io.IOException;
 
 /**
  * AdminServlet - Handles admin operations
  * @version 1.0.0
  */
-@WebServlet("/admin")
 public class AdminServlet extends HttpServlet {
 
     private UserDAO userDAO;

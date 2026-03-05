@@ -4,14 +4,14 @@ import com.oceanview.controller.UserController;
 import com.oceanview.model.User;
 import javax.servlet.*;
 import javax.servlet.http.*;
-import javax.servlet.annotation.*;
+
 import java.io.IOException;
 
 /**
  * LoginServlet - Handles login requests
  * @version 1.0.0
  */
-@WebServlet("/login")
+
 public class LoginServlet extends HttpServlet {
 
     private UserController userController;

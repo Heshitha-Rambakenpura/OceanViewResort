@@ -4,7 +4,7 @@ import com.oceanview.controller.PaymentController;
 import com.oceanview.model.*;
 import javax.servlet.*;
 import javax.servlet.http.*;
-import javax.servlet.annotation.*;
+
 import java.io.IOException;
 import java.time.LocalDate;
 
@@ -12,7 +12,7 @@ import java.time.LocalDate;
  * PaymentServlet - Handles payment operations
  * @version 1.0.0
  */
-@WebServlet("/payment")
+
 public class PaymentServlet extends HttpServlet {
 
     private PaymentController paymentController;

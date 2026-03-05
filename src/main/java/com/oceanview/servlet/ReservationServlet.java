@@ -4,7 +4,7 @@ import com.oceanview.controller.ReservationController;
 import com.oceanview.model.*;
 import javax.servlet.*;
 import javax.servlet.http.*;
-import javax.servlet.annotation.*;
+
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
@@ -13,7 +13,7 @@ import java.util.List;
  * ReservationServlet - Handles reservation operations
  * @version 1.0.0
  */
-@WebServlet("/reservation")
+
 public class ReservationServlet extends HttpServlet {
 
     private ReservationController reservationController;

@@ -5,7 +5,7 @@ import com.oceanview.model.Payment;
 import com.oceanview.model.User;
 import javax.servlet.*;
 import javax.servlet.http.*;
-import javax.servlet.annotation.*;
+
 import java.io.IOException;
 import java.util.List;
 
@@ -13,7 +13,6 @@ import java.util.List;
  * FinanceServlet - Handles finance department operations
  * @version 1.0.0
  */
-@WebServlet("/finance")
 public class FinanceServlet extends HttpServlet {
 
     private ReportController reportController;

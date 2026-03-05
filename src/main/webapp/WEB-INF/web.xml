@@ -105,4 +105,14 @@
         <url-pattern>/finance</url-pattern>
     </servlet-mapping>
 
+    <!-- Room -->
+    <servlet>
+        <servlet-name>RoomServlet</servlet-name>
+        <servlet-class>com.oceanview.servlet.RoomServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>RoomServlet</servlet-name>
+        <url-pattern>/room</url-pattern>
+    </servlet-mapping>
+
 </web-app>

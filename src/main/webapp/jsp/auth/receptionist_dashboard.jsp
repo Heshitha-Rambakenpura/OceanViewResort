@@ -108,6 +108,12 @@
             <h3>Make Payment</h3>
             <p>Process guest payments</p>
         </a>
+        <a href="${pageContext.request.contextPath}/room"
+           class="card">
+            <div class="icon">🛏️</div>
+            <h3>Room Management</h3>
+            <p>View all rooms and availability</p>
+        </a>
         <a href="${pageContext.request.contextPath}/report"
            class="card">
             <div class="icon">📊</div>
