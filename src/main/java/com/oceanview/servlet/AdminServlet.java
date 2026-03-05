@@ -49,11 +49,10 @@ public class AdminServlet extends HttpServlet {
 
         String action    = request.getParameter("action");
         HttpSession session  = request.getSession();
-        User user            = (User) session.getAttribute("user");
-        String ipAddress     = request.getRemoteAddr();
+        User user        = (User) session.getAttribute("user");
+        String ipAddress = request.getRemoteAddr();
 
         if ("manageUsers".equals(action)) {
-            // Get all users to display
             List<User> users = userDAO.getAllUsers();
             request.setAttribute("users", users);
             request.getRequestDispatcher(
@@ -75,6 +74,24 @@ public class AdminServlet extends HttpServlet {
                             "/jsp/admin/maintain_system.jsp")
                     .forward(request, response);
 
+        } else if ("deleteUser".equals(action)) {
+            String userIdParam = request.getParameter("userId");
+            if (userIdParam != null
+                    && !userIdParam.isEmpty()) {
+                int deleteUserId = Integer.parseInt(
+                        userIdParam);
+                boolean deleted  = userDAO.deleteUser(
+                        deleteUserId);
+                if (deleted) {
+                    auditLogDAO.logAction(user.getUserId(),
+                            "USER_DELETED - ID:" + deleteUserId,
+                            ipAddress);
+                }
+            }
+            response.sendRedirect(
+                    request.getContextPath()
+                            + "/admin?action=manageUsers");
+
         } else {
             response.sendRedirect(
                     request.getContextPath()
@@ -82,7 +99,7 @@ public class AdminServlet extends HttpServlet {
         }
     }
 
-    // ─── POST - Create New User ───
+    // ─── POST ───
     @Override
     protected void doPost(HttpServletRequest request,
                           HttpServletResponse response)
@@ -99,97 +116,138 @@ public class AdminServlet extends HttpServlet {
             return;
         }
 
-        String name            = request.getParameter("name");
-        String username        = request.getParameter("username");
-        String password        = request.getParameter("password");
-        String confirmPassword = request.getParameter(
-                "confirmPassword");
-        String role            = request.getParameter("role");
-        String ipAddress       = request.getRemoteAddr();
-
+        String formAction  = request.getParameter("formAction");
+        String ipAddress   = request.getRemoteAddr();
         HttpSession session = request.getSession();
-        User adminUser      = (User) session.getAttribute("user");
+        User adminUser     = (User) session.getAttribute("user");
 
-        // ─── Validate Fields ───
-        if (name == null || name.isEmpty()
-                || username == null || username.isEmpty()
-                || password == null || password.isEmpty()
-                || role == null || role.isEmpty()) {
-            request.setAttribute("error",
-                    "All fields are required!");
-            request.setAttribute("users",
-                    userDAO.getAllUsers());
-            request.getRequestDispatcher(
-                            "/jsp/admin/manage_users.jsp")
-                    .forward(request, response);
-            return;
-        }
+        // ─── CHANGE PASSWORD ───
+        if ("changePassword".equals(formAction)) {
+            int targetUserId   = Integer.parseInt(
+                    request.getParameter(
+                            "targetUserId"));
+            String newPassword = request.getParameter(
+                    "newPassword");
+            String confirmPwd  = request.getParameter(
+                    "confirmNewPassword");
 
-        // ─── Validate Password Match ───
-        if (!password.equals(confirmPassword)) {
-            request.setAttribute("error",
-                    "Passwords do not match!");
-            request.setAttribute("users",
-                    userDAO.getAllUsers());
-            request.getRequestDispatcher(
-                            "/jsp/admin/manage_users.jsp")
-                    .forward(request, response);
-            return;
-        }
+            if (!newPassword.equals(confirmPwd)) {
+                request.setAttribute("error",
+                        "Passwords do not match!");
 
-        // ─── Validate Password Length ───
-        if (password.length() < 6) {
-            request.setAttribute("error",
-                    "Password must be at least 6 characters!");
-            request.setAttribute("users",
-                    userDAO.getAllUsers());
-            request.getRequestDispatcher(
-                            "/jsp/admin/manage_users.jsp")
-                    .forward(request, response);
-            return;
-        }
+            } else if (newPassword.length() < 6) {
+                request.setAttribute("error",
+                        "Password must be at least 6 characters!");
 
-        // ─── Check Username Exists ───
-        if (userDAO.checkUsernameExists(username)) {
-            request.setAttribute("error",
-                    "Username already exists!");
-            request.setAttribute("users",
-                    userDAO.getAllUsers());
-            request.getRequestDispatcher(
-                            "/jsp/admin/manage_users.jsp")
-                    .forward(request, response);
-            return;
-        }
+            } else {
+                boolean changed = userDAO.changePassword(
+                        targetUserId,
+                        newPassword);
+                if (changed) {
+                    auditLogDAO.logAction(
+                            adminUser.getUserId(),
+                            "PASSWORD_CHANGED - UserID:"
+                                    + targetUserId, ipAddress);
+                    request.setAttribute("success",
+                            "Password changed successfully!");
+                } else {
+                    request.setAttribute("error",
+                            "Failed to change password!");
+                }
+            }
 
-        // ─── Create Correct User Type ───
-        User newUser;
-        switch (role) {
-            case "ADMIN":
-                newUser = new Admin();
-                break;
-            case "FINANCE":
-                newUser = new FinanceDepartment();
-                break;
-            default:
-                newUser = new Receptionist();
-                break;
-        }
-        newUser.setName(name);
-        newUser.setUsername(username);
-        newUser.setPassword(password);
-        newUser.setRole(role);
+            // ─── UPDATE USER ───
+        } else if ("updateUser".equals(formAction)) {
+            int targetUserId = Integer.parseInt(
+                    request.getParameter(
+                            "targetUserId"));
+            String name      = request.getParameter("name");
+            String username  = request.getParameter("username");
+            String role      = request.getParameter("role");
 
-        // ─── Save User ───
-        boolean saved = userDAO.saveUser(newUser);
+            User updateUser  = userDAO.getUserById(targetUserId);
+            if (updateUser != null) {
+                updateUser.setName(name);
+                updateUser.setUsername(username);
+                updateUser.setRole(role);
 
-        if (saved) {
-            auditLogDAO.logAction(adminUser.getUserId(),
-                    "USER_CREATED - " + username, ipAddress);
-            request.setAttribute("success",
-                    "User account created successfully!");
+                boolean updated = userDAO.updateUser(updateUser);
+                if (updated) {
+                    auditLogDAO.logAction(
+                            adminUser.getUserId(),
+                            "USER_UPDATED - ID:" + targetUserId,
+                            ipAddress);
+                    request.setAttribute("success",
+                            "User updated successfully!");
+                } else {
+                    request.setAttribute("error",
+                            "Failed to update user!");
+                }
+            }
+
+            // ─── CREATE USER ───
         } else {
-            request.setAttribute("error",
-                    "Failed to create user! Please try again.");
+            String name            = request.getParameter(
+                    "name");
+            String username        = request.getParameter(
+                    "username");
+            String password        = request.getParameter(
+                    "password");
+            String confirmPassword = request.getParameter(
+                    "confirmPassword");
+            String role            = request.getParameter(
+                    "role");
+
+            if (name == null || name.isEmpty()
+                    || username == null || username.isEmpty()
+                    || password == null || password.isEmpty()
+                    || role == null || role.isEmpty()) {
+                request.setAttribute("error",
+                        "All fields are required!");
+
+            } else if (!password.equals(confirmPassword)) {
+                request.setAttribute("error",
+                        "Passwords do not match!");
+
+            } else if (password.length() < 6) {
+                request.setAttribute("error",
+                        "Password must be at least 6 characters!");
+
+            } else if (userDAO.checkUsernameExists(username)) {
+                request.setAttribute("error",
+                        "Username already exists!");
+
+            } else {
+                User newUser;
+                switch (role) {
+                    case "ADMIN":
+                        newUser = new Admin();
+                        break;
+                    case "FINANCE":
+                        newUser = new FinanceDepartment();
+                        break;
+                    default:
+                        newUser = new Receptionist();
+                        break;
+                }
+                newUser.setName(name);
+                newUser.setUsername(username);
+                newUser.setPassword(password);
+                newUser.setRole(role);
+
+                boolean saved = userDAO.saveUser(newUser);
+                if (saved) {
+                    auditLogDAO.logAction(
+                            adminUser.getUserId(),
+                            "USER_CREATED - " + username,
+                            ipAddress);
+                    request.setAttribute("success",
+                            "User account created successfully!");
+                } else {
+                    request.setAttribute("error",
+                            "Failed to create user!");
+                }
+            }
         }
 
         request.setAttribute("users", userDAO.getAllUsers());

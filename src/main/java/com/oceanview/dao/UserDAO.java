@@ -78,22 +78,6 @@ public class UserDAO {
         return users;
     }
 
-    // ─── CHECK USERNAME EXISTS ───
-    public boolean checkUsernameExists(String username) {
-        String sql = "SELECT user_id FROM users " +
-                "WHERE username = ?";
-        try {
-            PreparedStatement ps = connection.prepareStatement(sql);
-            ps.setString(1, username);
-            ResultSet rs = ps.executeQuery();
-            return rs.next();
-        } catch (SQLException e) {
-            System.err.println("Check username error: "
-                    + e.getMessage());
-        }
-        return false;
-    }
-
     // ─── SAVE USER ───
     public boolean saveUser(User user) {
         String sql = "INSERT INTO users " +
@@ -114,8 +98,75 @@ public class UserDAO {
         return false;
     }
 
+    // ─── UPDATE USER ───
+    public boolean updateUser(User user) {
+        String sql = "UPDATE users SET name = ?, " +
+                "username = ?, role = ? " +
+                "WHERE user_id = ?";
+        try {
+            PreparedStatement ps = connection.prepareStatement(sql);
+            ps.setString(1, user.getName());
+            ps.setString(2, user.getUsername());
+            ps.setString(3, user.getRole());
+            ps.setInt(4, user.getUserId());
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            System.err.println("Update user error: "
+                    + e.getMessage());
+        }
+        return false;
+    }
+
+    // ─── DELETE USER ───
+    public boolean deleteUser(int userId) {
+        String sql = "DELETE FROM users WHERE user_id = ?";
+        try {
+            PreparedStatement ps = connection.prepareStatement(sql);
+            ps.setInt(1, userId);
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            System.err.println("Delete user error: "
+                    + e.getMessage());
+        }
+        return false;
+    }
+
+    // ─── CHANGE PASSWORD ───
+    public boolean changePassword(int userId,
+                                  String newPassword) {
+        String sql = "UPDATE users SET password = ? " +
+                "WHERE user_id = ?";
+        try {
+            PreparedStatement ps = connection.prepareStatement(sql);
+            ps.setString(1, newPassword);
+            ps.setInt(2, userId);
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            System.err.println("Change password error: "
+                    + e.getMessage());
+        }
+        return false;
+    }
+
+    // ─── CHECK USERNAME EXISTS ───
+    public boolean checkUsernameExists(String username) {
+        String sql = "SELECT user_id FROM users " +
+                "WHERE username = ?";
+        try {
+            PreparedStatement ps = connection.prepareStatement(sql);
+            ps.setString(1, username);
+            ResultSet rs = ps.executeQuery();
+            return rs.next();
+        } catch (SQLException e) {
+            System.err.println("Check username error: "
+                    + e.getMessage());
+        }
+        return false;
+    }
+
     // ─── UPDATE LOGIN STATUS ───
-    public boolean updateLoginStatus(int userId, boolean status) {
+    public boolean updateLoginStatus(int userId,
+                                     boolean status) {
         String sql = "UPDATE users SET login_status = ? " +
                 "WHERE user_id = ?";
         try {
