@@ -89,6 +89,12 @@
             <h3>Manage User Accounts</h3>
             <p>Create and manage staff accounts</p>
         </a>
+        <a href="${pageContext.request.contextPath}/admin?action=auditLogs"
+           class="card">
+            <div class="icon">📋</div>
+            <h3>View Audit Logs</h3>
+            <p>Monitor all system activities</p>
+        </a>
         <a href="${pageContext.request.contextPath}/admin?action=maintainSystem"
            class="card">
             <div class="icon">⚙️</div>

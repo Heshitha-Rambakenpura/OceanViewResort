@@ -20,7 +20,7 @@ public class UserController {
 
     // ─── VERIFY LOGIN ───
     public User verifyLogin(String username, String password,
-                            String ipAddress) {
+                            int i, String ipAddress) {
         User user = userDAO.verifyLogin(username, password);
         if (user != null) {
             // Login successful

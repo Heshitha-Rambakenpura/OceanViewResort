@@ -1,18 +1,25 @@
 package com.oceanview.servlet;
 
 import com.oceanview.controller.PaymentController;
-import com.oceanview.model.*;
-import javax.servlet.*;
-import javax.servlet.http.*;
-
+import com.oceanview.model.Bill;
+import com.oceanview.model.CashPayment;
+import com.oceanview.model.CardPayment;
+import com.oceanview.model.OnlineTransferPayment;
+import com.oceanview.model.Payment;
+import com.oceanview.model.User;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.time.LocalDate;
+import java.util.List;
 
 /**
  * PaymentServlet - Handles payment operations
  * @version 1.0.0
  */
-
 public class PaymentServlet extends HttpServlet {
 
     private PaymentController paymentController;
@@ -27,6 +34,7 @@ public class PaymentServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request,
                          HttpServletResponse response)
             throws ServletException, IOException {
+
         if (!isLoggedIn(request)) {
             response.sendRedirect(
                     request.getContextPath() + "/login");
@@ -36,12 +44,17 @@ public class PaymentServlet extends HttpServlet {
         String action = request.getParameter("action");
 
         if ("summary".equals(action)) {
-            List<Payment> payments = paymentController.getAllPayments();
-            double totalIncome     = paymentController.getTotalIncome();
+            // ─── PAYMENT SUMMARY ───
+            List<Payment> payments = paymentController
+                    .getAllPayments();
+            double totalIncome     = paymentController
+                    .getTotalIncome();
             int cashCount          = paymentController
-                    .getPaymentCountByMethod("CASH");
+                    .getPaymentCountByMethod(
+                            "CASH");
             int cardCount          = paymentController
-                    .getPaymentCountByMethod("CARD");
+                    .getPaymentCountByMethod(
+                            "CARD");
             int onlineCount        = paymentController
                     .getPaymentCountByMethod(
                             "ONLINE_TRANSFER");
@@ -56,7 +69,21 @@ public class PaymentServlet extends HttpServlet {
                             "/jsp/payment/payment_summary.jsp")
                     .forward(request, response);
 
-            int reservationId = Integer.parseInt(reservationIdParam);
+        } else {
+            // ─── MAKE PAYMENT ───
+            String reservationIdParam =
+                    request.getParameter("reservationId");
+
+            if (reservationIdParam == null
+                    || reservationIdParam.isEmpty()) {
+                response.sendRedirect(
+                        request.getContextPath()
+                                + "/reservation?action=list");
+                return;
+            }
+
+            int reservationId = Integer.parseInt(
+                    reservationIdParam);
             Bill bill = paymentController
                     .getBillByReservation(reservationId);
 
@@ -73,13 +100,15 @@ public class PaymentServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request,
                           HttpServletResponse response)
             throws ServletException, IOException {
+
         if (!isLoggedIn(request)) {
             response.sendRedirect(
                     request.getContextPath() + "/login");
             return;
         }
 
-        String paymentMethod = request.getParameter("paymentMethod");
+        String paymentMethod = request.getParameter(
+                "paymentMethod");
         int billId           = Integer.parseInt(
                 request.getParameter("billId"));
         double amount        = Double.parseDouble(
@@ -113,7 +142,8 @@ public class PaymentServlet extends HttpServlet {
         }
 
         request.setAttribute("bill", bill);
-        request.getRequestDispatcher("/jsp/payment/make_payment.jsp")
+        request.getRequestDispatcher(
+                        "/jsp/payment/make_payment.jsp")
                 .forward(request, response);
     }
 

@@ -2,16 +2,17 @@ package com.oceanview.servlet;
 
 import com.oceanview.controller.UserController;
 import com.oceanview.model.User;
-import javax.servlet.*;
-import javax.servlet.http.*;
-
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.io.IOException;
 
 /**
  * LoginServlet - Handles login requests
  * @version 1.0.0
  */
-
 public class LoginServlet extends HttpServlet {
 
     private UserController userController;
@@ -26,9 +27,11 @@ public class LoginServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request,
                          HttpServletResponse response)
             throws ServletException, IOException {
+
         // If already logged in redirect to dashboard
         HttpSession session = request.getSession(false);
-        if (session != null && session.getAttribute("user") != null) {
+        if (session != null
+                && session.getAttribute("user") != null) {
             User user = (User) session.getAttribute("user");
             response.sendRedirect(request.getContextPath()
                     + user.getDashboardURL());
@@ -43,13 +46,13 @@ public class LoginServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request,
                           HttpServletResponse response)
             throws ServletException, IOException {
-        String username  = request.getParameter("username");
-        String password  = request.getParameter("password");
-        String ipAddress = request.getRemoteAddr();
+
+        String username = request.getParameter("username");
+        String password = request.getParameter("password");
 
         // Validate not empty
-        if (username == null || username.trim().isEmpty()
-                || password == null || password.trim().isEmpty()) {
+        if (username == null || username.isEmpty()
+                || password == null || password.isEmpty()) {
             request.setAttribute("error",
                     "Username and password are required!");
             request.getRequestDispatcher("/jsp/auth/login.jsp")
@@ -57,27 +60,46 @@ public class LoginServlet extends HttpServlet {
             return;
         }
 
-        // Verify login through controller
-        User user = userController.verifyLogin(
-                username.trim(), password.trim(), ipAddress);
+        String ipAddress = request.getRemoteAddr();
+        User user        = userController.verifyLogin(
+                username, password,
+                0, ipAddress);
 
-        if (user != null) {
-            // Login successful - create session
-            HttpSession session = request.getSession();
-            session.setAttribute("user", user);
-            session.setAttribute("userId", user.getUserId());
-            session.setAttribute("userName", user.getName());
-            session.setAttribute("userRole", user.getRole());
-            session.setMaxInactiveInterval(30 * 60); // 30 mins
-
-            // Redirect to correct dashboard based on role
-            response.sendRedirect(request.getContextPath()
-                    + user.getDashboardURL());
-        } else {
-            // Login failed
-            request.setAttribute("error", "Invalid credentials!");
+        if (user == null) {
+            request.setAttribute("error",
+                    "Invalid username or password!");
             request.getRequestDispatcher("/jsp/auth/login.jsp")
                     .forward(request, response);
+            return;
+        }
+
+        // ─── Create Session ───
+        HttpSession newSession = request.getSession();
+        newSession.setAttribute("user", user);
+        newSession.setAttribute("userId", user.getUserId());
+        newSession.setAttribute("userName", user.getName());
+        newSession.setAttribute("userRole", user.getRole());
+        newSession.setMaxInactiveInterval(30 * 60);
+
+        // ─── Debug - print role to console ───
+        System.out.println("Login: " + username
+                + " Role: " + user.getRole());
+
+        // ─── Redirect Based on Role ───
+        String role = user.getRole();
+
+        if ("ADMIN".equals(role)) {
+            response.sendRedirect(request.getContextPath()
+                    + "/jsp/auth/admin_dashboard.jsp");
+
+        } else if ("FINANCE".equals(role)) {
+            response.sendRedirect(request.getContextPath()
+                    + "/jsp/auth/finance_dashboard.jsp");
+
+        } else {
+            // RECEPTIONIST
+            response.sendRedirect(request.getContextPath()
+                    + "/jsp/auth/receptionist_dashboard.jsp");
         }
     }
 }
