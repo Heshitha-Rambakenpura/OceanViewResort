@@ -113,11 +113,6 @@
                 <input type="number" name="numberOfGuests"
                        min="1" max="10" value="1" required />
             </div>
-            <div class="form-group">
-                <label>Special Requests</label>
-                <input type="text" name="specialRequests"
-                       placeholder="Any special requests?" />
-            </div>
             <button type="submit">Add Reservation</button>
         </form>
     </div>

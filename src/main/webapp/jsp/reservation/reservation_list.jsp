@@ -126,8 +126,6 @@
                             <td>
                                 <a href="${pageContext.request.contextPath}/bill?reservationId=${res.reservationId}"
                                    class="btn btn-info">Bill</a>
-                                <a href="${pageContext.request.contextPath}/payment?reservationId=${res.reservationId}"
-                                   class="btn btn-primary">Pay</a>
                                 <c:if test="${res.status == 'CONFIRMED'}">
                                     <a href="${pageContext.request.contextPath}/reservation?action=cancel&id=${res.reservationId}"
                                        class="btn btn-danger"
