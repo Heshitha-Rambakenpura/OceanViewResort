@@ -135,9 +135,23 @@
 
 <div class="container">
     <div class="back">
-        <a href="${pageContext.request.contextPath}/jsp/auth/receptionist_dashboard.jsp">
-            ← Back to Dashboard
-        </a>
+<%
+    String userRole = (String) session.getAttribute("userRole");
+    String dashboardUrl;
+    if ("ADMIN".equals(userRole)) {
+        dashboardUrl = request.getContextPath()
+                       + "/jsp/auth/admin_dashboard.jsp";
+    } else if ("FINANCE".equals(userRole)) {
+        dashboardUrl = request.getContextPath()
+                       + "/jsp/auth/finance_dashboard.jsp";
+    } else {
+        dashboardUrl = request.getContextPath()
+                       + "/jsp/auth/receptionist_dashboard.jsp";
+    }
+%>
+<a href="<%= dashboardUrl %>">
+    ← Back to Dashboard
+</a>
     </div>
 
     <h2>💰 Payment Summary</h2>
