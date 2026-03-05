@@ -132,4 +132,92 @@ public class PaymentDAO {
         }
         return payments;
     }
+    // ─── GET ALL PAYMENTS ───
+    public List<Payment> getAllPayments() {
+        List<Payment> payments = new ArrayList<>();
+        String sql = "SELECT p.*, b.reservation_id, b.net_amount, " +
+                "g.name as guest_name, " +
+                "r.room_id, ro.room_number " +
+                "FROM payments p " +
+                "JOIN bills b ON p.bill_id = b.bill_id " +
+                "JOIN reservations r " +
+                "ON b.reservation_id = r.reservation_id " +
+                "JOIN guests g ON r.guest_id = g.guest_id " +
+                "JOIN rooms ro ON r.room_id = ro.room_id " +
+                "ORDER BY p.payment_date DESC";
+        try {
+            PreparedStatement ps = connection.prepareStatement(sql);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                CashPayment p = new CashPayment();
+                p.setPaymentId(rs.getInt("payment_id"));
+                p.setAmount(rs.getDouble("amount"));
+                p.setPaymentStatus(rs.getString("payment_status"));
+                p.setReceiptNumber(rs.getString("receipt_number"));
+                p.setPaymentDate(rs.getTimestamp("payment_date")
+                        .toLocalDateTime());
+
+                // Set bill with guest info
+                Bill bill = new Bill();
+                bill.setBillId(rs.getInt("bill_id"));
+                bill.setNetAmount(rs.getDouble("net_amount"));
+
+                Reservation res = new Reservation();
+                res.setReservationId(rs.getInt("reservation_id"));
+
+                Guest guest = new Guest();
+                guest.setName(rs.getString("guest_name"));
+                res.setGuest(guest);
+
+                Room room = new Room();
+                room.setRoomNumber(rs.getString("room_number"));
+                res.setRoom(room);
+
+                bill.setReservation(res);
+                p.setBill(bill);
+
+                payments.add(p);
+            }
+        } catch (SQLException e) {
+            System.err.println("Get all payments error: "
+                    + e.getMessage());
+        }
+        return payments;
+    }
+
+    // ─── GET TOTAL INCOME ───
+    public double getTotalIncome() {
+        String sql = "SELECT SUM(amount) as total " +
+                "FROM payments " +
+                "WHERE payment_status = 'SUCCESS'";
+        try {
+            PreparedStatement ps = connection.prepareStatement(sql);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getDouble("total");
+            }
+        } catch (SQLException e) {
+            System.err.println("Get total income error: "
+                    + e.getMessage());
+        }
+        return 0.0;
+    }
+
+    // ─── GET PAYMENTS BY METHOD ───
+    public int getPaymentCountByMethod(String method) {
+        String sql = "SELECT COUNT(*) as count FROM payments " +
+                "WHERE payment_method = ? " +
+                "AND payment_status = 'SUCCESS'";
+        try {
+            PreparedStatement ps = connection.prepareStatement(sql);
+            ps.setString(1, method);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt("count");
+            }
+        } catch (SQLException e) {
+            System.err.println("Get count error: " + e.getMessage());
+        }
+        return 0;
+    }
 }

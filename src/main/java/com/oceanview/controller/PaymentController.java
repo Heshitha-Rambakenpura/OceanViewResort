@@ -46,6 +46,21 @@ public class PaymentController {
         return "SUCCESS";
     }
 
+    // ─── GET ALL PAYMENTS ───
+    public List<Payment> getAllPayments() {
+        return paymentDAO.getAllPayments();
+    }
+
+    // ─── GET TOTAL INCOME ───
+    public double getTotalIncome() {
+        return paymentDAO.getTotalIncome();
+    }
+
+    // ─── GET PAYMENT COUNT BY METHOD ───
+    public int getPaymentCountByMethod(String method) {
+        return paymentDAO.getPaymentCountByMethod(method);
+    }
+
     // ─── GET BILL BY RESERVATION ───
     public Bill getBillByReservation(int reservationId) {
         return billDAO.getBillByReservationId(reservationId);

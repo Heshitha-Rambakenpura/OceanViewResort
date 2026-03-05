@@ -33,15 +33,39 @@ public class PaymentServlet extends HttpServlet {
             return;
         }
 
-        int reservationId = Integer.parseInt(
-                request.getParameter("reservationId"));
-        Bill bill         = paymentController
-                .getBillByReservation(reservationId);
+        String action = request.getParameter("action");
 
-        request.setAttribute("bill", bill);
-        request.setAttribute("reservationId", reservationId);
-        request.getRequestDispatcher("/jsp/payment/make_payment.jsp")
-                .forward(request, response);
+        if ("summary".equals(action)) {
+            List<Payment> payments = paymentController.getAllPayments();
+            double totalIncome     = paymentController.getTotalIncome();
+            int cashCount          = paymentController
+                    .getPaymentCountByMethod("CASH");
+            int cardCount          = paymentController
+                    .getPaymentCountByMethod("CARD");
+            int onlineCount        = paymentController
+                    .getPaymentCountByMethod(
+                            "ONLINE_TRANSFER");
+
+            request.setAttribute("payments", payments);
+            request.setAttribute("totalIncome", totalIncome);
+            request.setAttribute("cashCount", cashCount);
+            request.setAttribute("cardCount", cardCount);
+            request.setAttribute("onlineCount", onlineCount);
+
+            request.getRequestDispatcher(
+                            "/jsp/payment/payment_summary.jsp")
+                    .forward(request, response);
+
+            int reservationId = Integer.parseInt(reservationIdParam);
+            Bill bill = paymentController
+                    .getBillByReservation(reservationId);
+
+            request.setAttribute("bill", bill);
+            request.setAttribute("reservationId", reservationId);
+            request.getRequestDispatcher(
+                            "/jsp/payment/make_payment.jsp")
+                    .forward(request, response);
+        }
     }
 
     // ─── POST - Process Payment ───
