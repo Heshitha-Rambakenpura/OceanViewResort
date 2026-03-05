@@ -89,6 +89,18 @@
             <h3>Manage User Accounts</h3>
             <p>Create and manage staff accounts</p>
         </a>
+        <a href="${pageContext.request.contextPath}/room?action=manageRooms"
+           class="card">
+            <div class="icon">🛏️</div>
+            <h3>Manage Rooms</h3>
+            <p>Add, edit and delete rooms</p>
+        </a>
+        <a href="${pageContext.request.contextPath}/room?action=manageRoomTypes"
+           class="card">
+            <div class="icon">📋</div>
+            <h3>Manage Room Types</h3>
+            <p>Add, edit and delete room types</p>
+        </a>
         <a href="${pageContext.request.contextPath}/admin?action=auditLogs"
            class="card">
             <div class="icon">📋</div>
