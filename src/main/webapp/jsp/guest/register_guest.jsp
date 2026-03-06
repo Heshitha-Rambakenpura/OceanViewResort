@@ -182,7 +182,8 @@
                            id="passportInput"
                            placeholder="e.g. N1234567"
                            oninput="validatePassport(this)"
-                           maxlength="9" />
+                           maxlength="9"
+                           disabled />
                     <div class="field-error"
                          id="passportError">
                         Use 1-2 letters + 6-7 digits only!
@@ -267,9 +268,13 @@ function selectIdType(type) {
                 .style.display = 'block';
         document.getElementById('passportSection')
                 .style.display = 'none';
-        // ─── Enable NIC, disable passport ───
+        // Enable NIC, DISABLE passport so it doesn't submit
+        document.getElementById('nicInput')
+                .disabled = false;
         document.getElementById('nicInput')
                 .required = true;
+        document.getElementById('passportInput')
+                .disabled = true;
         document.getElementById('passportInput')
                 .required = false;
         document.getElementById('passportInput')
@@ -283,9 +288,13 @@ function selectIdType(type) {
                 .style.display = 'block';
         document.getElementById('nicSection')
                 .style.display = 'none';
-        // ─── Enable passport, disable NIC ───
+        // Enable passport, DISABLE NIC so it doesn't submit
+        document.getElementById('passportInput')
+                .disabled = false;
         document.getElementById('passportInput')
                 .required = true;
+        document.getElementById('nicInput')
+                .disabled = true;
         document.getElementById('nicInput')
                 .required = false;
         document.getElementById('nicInput')
